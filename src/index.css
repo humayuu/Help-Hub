@@ -43,23 +43,60 @@ a {
 #root .toast {
   pointer-events: auto;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
   min-width: min(280px, calc(100vw - 24px));
   max-width: min(380px, calc(100vw - 24px));
-  padding: 14px 14px 14px 16px;
-  border-radius: 16px;
+  padding: 0;
+  border-radius: 18px;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
   box-shadow: 0 18px 48px rgba(17, 33, 29, 0.2);
   animation: toast-in 0.28s ease;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+#root .toast-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 12px 10px 18px;
 }
 
 #root .toast-msg {
   flex: 1;
   min-width: 0;
+  padding-top: 2px;
+}
+
+#root .toast-progress {
+  height: 3px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+#root .toast-progress__bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.95));
+  transform-origin: left center;
+  animation: toast-countdown linear forwards;
+}
+
+@keyframes toast-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
 #root .toast--info {
@@ -81,23 +118,62 @@ a {
 
 #root .toast-dismiss {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin: -4px -6px -4px 0;
+  align-self: center;
+  margin-top: 0;
+  width: 40px;
+  height: 40px;
+  margin: 0;
   padding: 0;
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.12);
-  color: inherit;
-  font-size: 20px;
-  line-height: 1;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+  color: rgba(255, 255, 255, 0.95);
   cursor: pointer;
   display: grid;
   place-items: center;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+#root .toast-dismiss__icon {
+  display: block;
+  pointer-events: none;
 }
 
 #root .toast-dismiss:hover {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.55);
+  transform: scale(1.04);
+}
+
+#root .toast-dismiss:active {
+  transform: scale(0.96);
+}
+
+#root .toast-dismiss:focus {
+  outline: none;
+}
+
+#root .toast-dismiss:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root .toast {
+    animation: none;
+  }
+
+  #root .toast-progress__bar {
+    animation: none;
+    transform: scaleX(0.4);
+    opacity: 0.65;
+  }
 }
 
 @keyframes toast-in {

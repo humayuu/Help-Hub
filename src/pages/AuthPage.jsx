@@ -8,6 +8,7 @@ import {
   SEED_USERS,
 } from "../lib/usersStorage.js";
 import NetlifyTopbar from "../components/NetlifyTopbar.jsx";
+import { useToast } from "../context/ToastContext.jsx";
 
 const ROLES = [
   { value: "need_help", label: "Need Help" },
@@ -32,6 +33,7 @@ function startSession(user) {
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [mode, setMode] = useState("login");
 
   const [loginEmail, setLoginEmail] = useState(SEED_USERS[0].email);
@@ -65,9 +67,11 @@ export default function AuthPage() {
     const user = verifyLogin(loginEmail, loginPassword);
     if (!user) {
       setError("Invalid email or password.");
+      showToast("Invalid email or password.", "error");
       return;
     }
     startSession(user);
+    showToast(`Signed in as ${user.name}.`, "success");
     navigate(isOnboardingComplete() ? "/dashboard" : "/onboarding", { replace: true });
   }
 
@@ -76,18 +80,22 @@ export default function AuthPage() {
     setError("");
     if (!signName.trim()) {
       setError("Please enter your name.");
+      showToast("Please enter your name.", "error");
       return;
     }
     if (!signEmail.trim()) {
       setError("Please enter your email.");
+      showToast("Please enter your email.", "error");
       return;
     }
     if (signPassword.length < 6) {
       setError("Password must be at least 6 characters.");
+      showToast("Password must be at least 6 characters.", "error");
       return;
     }
     if (signPassword !== signConfirm) {
       setError("Passwords do not match.");
+      showToast("Passwords do not match.", "error");
       return;
     }
     const res = registerUser({
@@ -98,9 +106,11 @@ export default function AuthPage() {
     });
     if (!res.ok) {
       setError(res.error);
+      showToast(res.error, "error");
       return;
     }
     startSession(res.user);
+    showToast("Account created — complete onboarding next.", "success");
     navigate(isOnboardingComplete() ? "/dashboard" : "/onboarding", { replace: true });
   }
 

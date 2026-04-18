@@ -9,6 +9,7 @@ import {
 import { shortAiSummary } from "../lib/requestAi.js";
 import { loadSession } from "../lib/storage.js";
 import { appendNotification } from "../lib/notificationsStorage.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 function urgencyClass(u) {
   if (u === "High") return "tag urgent";
@@ -33,6 +34,7 @@ function initials(name) {
 export default function RequestDetailPage() {
   const { id } = useParams();
   const session = loadSession();
+  const { showToast } = useToast();
 
   const [record, setRecord] = useState(() => (id ? getRequestById(id) : null));
   const [flash, setFlash] = useState(null);
@@ -83,7 +85,9 @@ export default function RequestDetailPage() {
         own_request: "You cannot volunteer on your own request.",
         already: "You are already on the helper list.",
       };
-      setFlash({ type: "err", text: map[res.error] ?? "Could not update." });
+      const msg = map[res.error] ?? "Could not update.";
+      setFlash({ type: "err", text: msg });
+      showToast(msg, "error");
       return;
     }
     appendNotification({
@@ -92,6 +96,7 @@ export default function RequestDetailPage() {
       body: `${session.displayName} offered to help on “${r.title}”.`,
     });
     setFlash({ type: "ok", text: "You are on the helper list for this request." });
+    showToast("You’re on the helper list for this request.", "success");
     refresh();
   }
 
@@ -105,7 +110,9 @@ export default function RequestDetailPage() {
         forbidden: "Only the author can mark this as solved.",
         already: "Already marked as solved.",
       };
-      setFlash({ type: "err", text: map[res.error] ?? "Could not update." });
+      const msg = map[res.error] ?? "Could not update.";
+      setFlash({ type: "err", text: msg });
+      showToast(msg, "error");
       return;
     }
     appendNotification({
@@ -114,6 +121,7 @@ export default function RequestDetailPage() {
       body: `You marked “${r.title}” as solved.`,
     });
     setFlash({ type: "ok", text: "Marked as solved." });
+    showToast("Request marked as solved.", "success");
     refresh();
   }
 

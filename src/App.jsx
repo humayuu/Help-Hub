@@ -15,9 +15,11 @@ import MessagesPage from "./pages/MessagesPage.jsx";
 import LeaderboardPage from "./pages/LeaderboardPage.jsx";
 import AICenterPage from "./pages/AICenterPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
+import { ToastProvider } from "./context/ToastContext.jsx";
 
 export default function App() {
   return (
+    <ToastProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -42,5 +44,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   );
 }

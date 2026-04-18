@@ -4,6 +4,7 @@ import {
   setNotificationRead,
   markAllNotificationsRead,
 } from "../lib/notificationsStorage.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 function formatWhen(iso) {
   const d = new Date(iso);
@@ -24,6 +25,7 @@ function typeLabel(type) {
 }
 
 export default function NotificationsPage() {
+  const { showToast } = useToast();
   const [, bump] = useState(0);
   const list = useMemo(() => getNotifications(), [bump]);
 
@@ -55,6 +57,7 @@ export default function NotificationsPage() {
             onClick={() => {
               markAllNotificationsRead();
               refresh();
+              showToast("All notifications marked as read.", "success");
             }}
           >
             Mark all read
@@ -79,8 +82,10 @@ export default function NotificationsPage() {
                   className="btn btn-secondary"
                   style={{ flexShrink: 0 }}
                   onClick={() => {
-                    setNotificationRead(n.id, !n.read);
+                    const next = !n.read;
+                    setNotificationRead(n.id, next);
                     refresh();
+                    showToast(next ? "Marked as read." : "Marked as unread.", "info");
                   }}
                 >
                   {n.read ? "Mark unread" : "Mark read"}

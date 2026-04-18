@@ -10,6 +10,7 @@ import {
   rewriteDescription,
 } from "../lib/requestAi.js";
 import { appendNotification } from "../lib/notificationsStorage.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 const CATEGORIES = [
   "Web Development",
@@ -31,6 +32,7 @@ export default function CreateRequestPage() {
   const navigate = useNavigate();
   const session = loadSession();
   const profile = loadProfile();
+  const { showToast } = useToast();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -55,6 +57,7 @@ export default function CreateRequestPage() {
     setTagsText(merged.join(", "));
     const next = rewriteDescription(title, description);
     if (next) setDescription(next);
+    showToast("AI suggestions applied to category, urgency, tags, and description.", "success");
   }
 
   function handleSubmit(e) {
@@ -62,10 +65,12 @@ export default function CreateRequestPage() {
     setError("");
     if (!title.trim()) {
       setError("Please add a title.");
+      showToast("Add a title before publishing.", "error");
       return;
     }
     if (!description.trim()) {
       setError("Please add a description.");
+      showToast("Add a description before publishing.", "error");
       return;
     }
     if (!session) return;
@@ -100,6 +105,7 @@ export default function CreateRequestPage() {
       title: "Request published",
       body: `“${row.title}” is now visible in Explore.`,
     });
+    showToast("Request published — opening detail view.", "success");
     navigate(`/requests/${id}`, { replace: true });
   }
 

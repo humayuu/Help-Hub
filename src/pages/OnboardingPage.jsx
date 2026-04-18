@@ -11,10 +11,12 @@ import {
   suggestAreasYouMayNeedHelp,
   parseList,
 } from "../lib/onboardingAi.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
   const session = loadSession();
+  const { showToast } = useToast();
 
   const [name, setName] = useState(() => loadSession()?.displayName ?? "");
   const [skillsText, setSkillsText] = useState("");
@@ -58,10 +60,12 @@ export default function OnboardingPage() {
     setError("");
     if (!name.trim()) {
       setError("Please enter your name.");
+      showToast("Name is required.", "error");
       return;
     }
     if (!location.trim()) {
       setError("Please enter your location.");
+      showToast("Location is required.", "error");
       return;
     }
     saveProfile({
@@ -73,6 +77,7 @@ export default function OnboardingPage() {
       onboardingComplete: true,
       updatedAt: new Date().toISOString(),
     });
+    showToast("Profile complete — welcome to your dashboard.", "success");
     navigate("/dashboard", { replace: true });
   }
 

@@ -6,8 +6,10 @@ import {
   setRequestModerationHidden,
 } from "../lib/requestsStorage.js";
 import { appendNotification } from "../lib/notificationsStorage.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 export default function AdminPage() {
+  const { showToast } = useToast();
   const [, bump] = useState(0);
   const all = useMemo(() => getRequests(), [bump]);
 
@@ -37,6 +39,7 @@ export default function AdminPage() {
       title: "Admin: request removed",
       body: `“${title}” was deleted from LocalStorage.`,
     });
+    showToast(`Request deleted: “${title}”.`, "success");
     refresh();
   }
 
@@ -48,6 +51,7 @@ export default function AdminPage() {
       title: next ? "Admin: hidden from feed" : "Admin: restored to feed",
       body: `“${r.title}”`,
     });
+    showToast(next ? `Hidden from feed: “${r.title}”.` : `Restored to feed: “${r.title}”.`, "success");
     refresh();
   }
 

@@ -1,5 +1,6 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { loadSession, clearSession, clearProfile } from "../lib/storage.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 const linkClass = ({ isActive }) => (isActive ? "active" : undefined);
 
@@ -11,10 +12,12 @@ const btnNavClass =
 export default function NetlifyTopbar({ variant = "app" }) {
   const navigate = useNavigate();
   const session = loadSession();
+  const { showToast } = useToast();
 
   function handleLogout() {
     clearSession();
     clearProfile();
+    showToast("You’re signed out.", "success");
     navigate("/", { replace: true });
   }
 

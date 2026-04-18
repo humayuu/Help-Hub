@@ -2,9 +2,11 @@ import { useState } from "react";
 import { loadSession, loadProfile, saveProfile, saveSession } from "../lib/storage.js";
 import { userContributionStats, badgesForUser } from "../lib/communityStats.js";
 import { parseList } from "../lib/onboardingAi.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 export default function ProfilePage() {
   const session = loadSession();
+  const { showToast } = useToast();
   const initial = loadProfile() ?? {};
   const stats = userContributionStats(session?.userId);
 
@@ -12,8 +14,6 @@ export default function ProfilePage() {
   const [location, setLocation] = useState(initial.location ?? "");
   const [skillsText, setSkillsText] = useState((initial.skills || []).join(", "));
   const [interestsText, setInterestsText] = useState((initial.interests || []).join(", "));
-  const [saved, setSaved] = useState(false);
-
   const skillsArr = parseList(skillsText);
   const badges = badgesForUser(stats.trust, stats.contributions, stats.helped);
 
@@ -34,8 +34,7 @@ export default function ProfilePage() {
       ...session,
       displayName: name.trim() || session.displayName,
     });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    showToast("Profile saved.", "success");
   }
 
   return (
@@ -131,9 +130,6 @@ export default function ProfilePage() {
                 placeholder="Career guidance, open source"
               />
             </div>
-            {saved ? (
-              <p style={{ color: "var(--success)", fontWeight: 600 }}>Profile saved.</p>
-            ) : null}
             <button type="submit" className="btn btn-primary">
               Save profile
             </button>

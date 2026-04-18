@@ -2,9 +2,11 @@ import { useMemo, useState } from "react";
 import { loadSession } from "../lib/storage.js";
 import { getAllUsers } from "../lib/usersStorage.js";
 import { getMessages, addMessage } from "../lib/messagesStorage.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 export default function MessagesPage() {
   const session = loadSession();
+  const { showToast } = useToast();
   const [toId, setToId] = useState("");
   const [body, setBody] = useState("");
   const [, bump] = useState(0);
@@ -26,10 +28,20 @@ export default function MessagesPage() {
 
   function handleSend(e) {
     e.preventDefault();
+    if (!recipients.length) {
+      showToast("No other demo users to message yet.", "error");
+      return;
+    }
     const targetId = toId || recipients[0]?.id;
-    if (!session || !targetId || !body.trim()) return;
+    if (!session || !targetId || !body.trim()) {
+      showToast("Pick a recipient and write a message.", "error");
+      return;
+    }
     const to = recipients.find((u) => u.id === targetId);
-    if (!to) return;
+    if (!to) {
+      showToast("Recipient not found.", "error");
+      return;
+    }
     addMessage({
       fromUserId: session.userId,
       fromName: session.displayName,
@@ -39,6 +51,7 @@ export default function MessagesPage() {
     });
     setBody("");
     refresh();
+    showToast(`Message sent to ${to.name}.`, "success");
   }
 
   return (
